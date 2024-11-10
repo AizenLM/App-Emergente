@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
   addDeviceContainer: {
     alignItems: 'center',
     marginTop: 20,
+    marginBottom: 45,
   },
   addDeviceButton: {
     backgroundColor: '#2ecc71',

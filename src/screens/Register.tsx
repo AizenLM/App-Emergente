@@ -1,151 +1,233 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { Picker as RNPicker } from '@react-native-picker/picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Button,
+} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
 
-const RegisterScreen = ({ navigation }: any) => {
-  // Estado para los campos del formulario
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [sex, setSex] = useState('Male');
-  const [disability, setDisability] = useState('None');
+const RegisterScreen = () => {
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [curp, setCurp] = useState("");
+  const [nss, setNss] = useState("");
+  const [bloodType, setBloodType] = useState("A+");
+  const [birthDate, setBirthDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [gender, setGender] = useState("Masculino");
 
-  // Función para manejar el registro
-  const handleRegister = async () => {
-    // Guardar los datos en AsyncStorage
-    const userData = {
-      firstName,
-      lastName,
-      birthDate,
-      phoneNumber,
-      email,
-      password, // Añadido el campo de contraseña
-      sex,
-      disability,
-    };
-
-    try {
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
-      // Navegar a la pantalla principal después del registro
-      navigation.navigate('Home');
-    } catch (error) {
-      console.log('Error al guardar los datos en AsyncStorage:', error);
-    }
+  const handleRegister = () => {
+    Alert.alert(
+      "Registro Exitoso",
+      `Nombre: ${name}\nContraseña: ${password}\nDirección: ${address}\nTeléfono: ${phone}\nCorreo: ${email}\nCURP: ${curp}\nNSS: ${nss}\nTipo de Sangre: ${bloodType}\nFecha de Nacimiento: ${birthDate.toLocaleDateString()}\nSexo: ${gender}`
+    );
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Registro de Usuario</Text>
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Apellido"
-        value={lastName}
-        onChangeText={setLastName}
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Fecha de Nacimiento (DD/MM/AAAA)"
-        value={birthDate}
-        onChangeText={setBirthDate}
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Número Telefónico"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType="phone-pad"
-      />
-      
-      <TextInput
-        style={styles.input}
-        placeholder="Correo Electrónico"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.title}>Registro</Text>
 
-      {/* Campo de Contraseña */}
-      <TextInput
-        style={styles.input}
-        placeholder="Contraseña"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={true} // Oculta el texto mientras se escribe
-      />
+      {/* Nombre Completo */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Nombre Completo:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre Completo"
+          value={name}
+          onChangeText={setName}
+        />
+      </View>
 
-      <Text style={styles.label}>Sexo:</Text>
-      <RNPicker
-        selectedValue={sex}
-        onValueChange={(itemValue) => setSex(itemValue)}
-        style={styles.picker}
-      >
-        <RNPicker.Item label="Masculino" value="Male" />
-        <RNPicker.Item label="Femenino" value="Female" />
-        <RNPicker.Item label="Otro" value="Other" />
-      </RNPicker>
+      {/* Contraseña */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Contraseña:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
 
-      <Text style={styles.label}>Tipo de Discapacidad:</Text>
-      <RNPicker
-        selectedValue={disability}
-        onValueChange={(itemValue) => setDisability(itemValue)}
-        style={styles.picker}
-      >
-        <RNPicker.Item label="Ninguna" value="None" />
-        <RNPicker.Item label="Discapacidad auditiva" value="Hearing" />
-        <RNPicker.Item label="Discapacidad visual" value="Visual" />
-        <RNPicker.Item label="Discapacidad motriz" value="Motor" />
-        <RNPicker.Item label="Discapacidad cognitiva" value="Cognitive" />
-      </RNPicker>
+      {/* Dirección */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Dirección:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Dirección"
+          value={address}
+          onChangeText={setAddress}
+        />
+      </View>
 
-      <Button title="Registrar" onPress={handleRegister} />
-    </View>
+      {/* Teléfono */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Teléfono:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Teléfono"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+        />
+      </View>
+
+      {/* Correo Electrónico */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Correo Electrónico:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Correo Electrónico"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+        />
+      </View>
+
+      {/* CURP */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>CURP:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="CURP"
+          value={curp}
+          onChangeText={setCurp}
+        />
+      </View>
+
+      {/* NSS */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>NSS (Número de Seguridad Social):</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="NSS"
+          value={nss}
+          onChangeText={setNss}
+        />
+      </View>
+
+      {/* Tipo de Sangre */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Tipo de Sangre:</Text>
+        <Picker
+          selectedValue={bloodType}
+          style={styles.picker}
+          onValueChange={(itemValue) => setBloodType(itemValue)}
+        >
+          <Picker.Item label="A+" value="A+" />
+          <Picker.Item label="A-" value="A-" />
+          <Picker.Item label="B+" value="B+" />
+          <Picker.Item label="B-" value="B-" />
+          <Picker.Item label="AB+" value="AB+" />
+          <Picker.Item label="AB-" value="AB-" />
+          <Picker.Item label="O+" value="O+" />
+          <Picker.Item label="O-" value="O-" />
+        </Picker>
+      </View>
+
+      {/* Fecha de Nacimiento */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Fecha de Nacimiento:</Text>
+        <Button title="Seleccionar Fecha" onPress={() => setShowDatePicker(true)} />
+        {showDatePicker && (
+          <DateTimePicker
+            value={birthDate}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              setShowDatePicker(false);
+              if (selectedDate) setBirthDate(selectedDate);
+            }}
+          />
+        )}
+        <Text style={styles.dateText}>
+          Fecha seleccionada: {birthDate.toLocaleDateString()}
+        </Text>
+      </View>
+
+      {/* Sexo */}
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Sexo:</Text>
+        <Picker
+          selectedValue={gender}
+          style={styles.picker}
+          onValueChange={(itemValue) => setGender(itemValue)}
+        >
+          <Picker.Item label="Masculino" value="Masculino" />
+          <Picker.Item label="Femenino" value="Femenino" />
+          <Picker.Item label="Otro" value="Otro" />
+        </Picker>
+      </View>
+
+      {/* Botón de Registro */}
+      <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+        <Text style={styles.registerButtonText}>Registrar</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-    backgroundColor: '#f4f4f9',
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: "#f4f4f4",
   },
-  header: {
+  title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
-    textAlign: 'center',
   },
-  input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingLeft: 10,
+  inputContainer: {
+    marginBottom: 15,
   },
   label: {
     fontSize: 16,
-    marginBottom: 10,
-    marginTop: 20,
+    fontWeight: "500",
+    marginBottom: 5,
+  },
+  input: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 5,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    fontSize: 16,
   },
   picker: {
     height: 50,
-    width: '100%',
-    marginBottom: 20,
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 5,
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
+  dateText: {
+    fontSize: 16,
+    marginTop: 5,
+  },
+  registerButton: {
+    backgroundColor: "#3498db",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  registerButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

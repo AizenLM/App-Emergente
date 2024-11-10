@@ -59,6 +59,7 @@ const AddDevice = ({ route, navigation }: any) => {
         <Text style={styles.addButtonText}>Agregar Dispositivo</Text>
       </TouchableOpacity>
     </View>
+
   );
 };
 

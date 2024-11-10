@@ -24,7 +24,7 @@ const LoginScreen = ({ navigation }: any) => {
     }
   };
   const handleRegister = ()=>{
-    navigation.navigate("Register")
+    navigation.navigate("RegisterPersonalInfo")
   }
 
   return (
@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
   header: {
     justifyContent: 'center',
     padding: 10,
-    backgroundColor: 'green'
   },
   login: {
     flex: 1,
@@ -86,7 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
   },
   title: {
-    fontSize: 24,
+    fontSize: 34,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 20,
