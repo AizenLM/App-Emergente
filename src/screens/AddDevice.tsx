@@ -1,73 +1,106 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import IonIcon from 'react-native-vector-icons/Ionicons';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  FlatList,
+} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+const iconOptions = [
+  'lightbulb',
+  'fan',
+  'television',
+  'speaker',
+  'fridge',
+  'air-conditioner',
+];
 
 const AddDevice = ({ route, navigation }: any) => {
-  const { addDevice } = route.params; // Obtener la función addDevice desde HomeScreen
-  const [deviceName, setDeviceName] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('');
+  const { addDevice } = route.params;
 
-  // Lista de tipos de dispositivos con su nombre y su ícono
-  const deviceTypes = [
-    { name: 'Luces', icon: 'sunny' },
-    { name: 'Aire Acondicionado', icon: 'snow' },
-    { name: 'Televisor', icon: 'tv' },
-    { name: 'Puertas', icon: 'lock-closed' },
-  ];
+  const [name, setName] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState('');
+  const [ip, setIp] = useState('');
 
   const handleAddDevice = () => {
-    if (deviceName.trim() === '' || selectedIcon === '') {
-      Alert.alert('Error', 'Debes ingresar un nombre y seleccionar un tipo de dispositivo');
+    if (!name || !ip || !selectedIcon) {
+      Alert.alert('Error', 'Por favor, completa todos los campos.');
       return;
     }
 
-    addDevice(deviceName, selectedIcon);
-    navigation.goBack(); // Volver a la pantalla principal después de agregar el dispositivo
+    addDevice(name, selectedIcon, ip);
+    Alert.alert('Éxito', `Dispositivo "${name}" agregado con éxito.`);
+    navigation.goBack();
   };
+
+  const renderIconOption = (icon: string) => (
+    <TouchableOpacity
+      key={icon}
+      style={[
+        styles.iconButton,
+        selectedIcon === icon && styles.selectedIconButton,
+      ]}
+      onPress={() => setSelectedIcon(icon)}
+    >
+      <MaterialCommunityIcons name={icon} size={50} color="#ffffff" />
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Agregar un nuevo dispositivo</Text>
+      <Text style={styles.title}>Agregar Dispositivo</Text>
 
-      {/* Selección del tipo de dispositivo */}
-      <View style={styles.deviceTypesContainer}>
-        {deviceTypes.map((device, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.deviceButton,
-              selectedIcon === device.icon && styles.selectedDeviceButton,
-            ]}
-            onPress={() => setSelectedIcon(device.icon)}
-          >
-            <IonIcon name={device.icon} size={50} color={selectedIcon === device.icon ? 'white' : '#3498db'} />
-            <Text style={styles.deviceText}>{device.name}</Text>
-          </TouchableOpacity>
-        ))}
+      {/* Campo para el nombre */}
+      <View style={styles.inputContainer}>
+        <MaterialCommunityIcons name="label-outline" size={24} color="#34495e" />
+        <TextInput
+          style={styles.input}
+          placeholder="Nombre del dispositivo"
+          value={name}
+          onChangeText={setName}
+        />
       </View>
 
-      {/* Entrada para el nombre del dispositivo */}
-      <TextInput
-        style={styles.input}
-        placeholder="Ingrese el nombre del dispositivo"
-        value={deviceName}
-        onChangeText={setDeviceName}
+      {/* Selección de íconos */}
+      <Text style={styles.label}>Selecciona un tipo de dispositivo</Text>
+      <FlatList
+        data={iconOptions}
+        renderItem={({ item }) => renderIconOption(item)}
+        keyExtractor={(item) => item}
+        numColumns={2} // Definir el número de columnas a 2
+        contentContainerStyle={styles.iconList}
       />
+
+      {/* Campo para la dirección IP */}
+      <View style={styles.inputContainer}>
+        <MaterialCommunityIcons name="web" size={24} color="#34495e" />
+        <TextInput
+          style={styles.input}
+          placeholder="IP del dispositivo"
+          value={ip}
+          onChangeText={setIp}
+          keyboardType="default"
+        />
+      </View>
 
       {/* Botón para agregar el dispositivo */}
       <TouchableOpacity style={styles.addButton} onPress={handleAddDevice}>
         <Text style={styles.addButtonText}>Agregar Dispositivo</Text>
       </TouchableOpacity>
     </View>
-
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#f5f5f5',
     padding: 20,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 24,
@@ -76,36 +109,44 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  deviceTypesContainer: {
+  inputContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
-    marginBottom: 20,
-  },
-  deviceButton: {
     alignItems: 'center',
-    padding: 10,
-    marginBottom: 15,
-    width: 120,
-    height: 120,
+    borderWidth: 1,
+    borderColor: '#bdc3c7',
     borderRadius: 10,
-    backgroundColor: '#ecf0f1',
-    margin: 5,
-  },
-  selectedDeviceButton: {
-    backgroundColor: '#3498db',
-  },
-  deviceText: {
-    marginTop: 10,
-    color: '#7f8c8d',
-    textAlign: 'center',
+    paddingHorizontal: 10,
+    backgroundColor: '#ffffff',
+    marginBottom: 15,
   },
   input: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 10,
-    fontSize: 18,
-    marginBottom: 20,
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#34495e',
+    marginBottom: 10,
+  },
+  iconList: {
+    marginBottom: 15,
+  },
+  iconButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 10,
+    backgroundColor: '#3498db',
+    borderRadius: 15,
+    padding: 30,  // Aumentado para íconos más grandes
+    elevation: 5, // Añade sombra para un efecto más 3D
+    marginBottom: 20, // Espacio entre filas
+  },
+  selectedIconButton: {
+    borderColor: '#2ecc71',
+    backgroundColor: '#ecf0f1',
   },
   addButton: {
     backgroundColor: '#2ecc71',
@@ -114,8 +155,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addButtonText: {
-    fontSize: 18,
     color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

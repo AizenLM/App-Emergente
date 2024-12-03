@@ -9,27 +9,21 @@ import {
 } from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import NavBar from '../components/NavBar';
- // Reemplaza con la dirección IP de tu ESP8266
 
-
-  
 const HomeScreen = ({ navigation }: any) => {
   // Estado para almacenar los dispositivos agregados
-  const ESP8266_IP = 'http://192.168.201.58';
   const [devices, setDevices] = useState<any[]>([]);
-  const [isLedOn, setIsLedOn] = useState(false); // Estado para rastrear si el LED está encendido
-
-  const toggleLed = async () => {
+  
+  // Función para manejar el control del LED de cada dispositivo
+  const toggleLed = async (deviceIp: string, isLedOn: boolean) => {
     try {
       // Determina la ruta en función del estado actual del LED
       const route = isLedOn ? '/L' : '/H';
-      await fetch(`${ESP8266_IP}${route}`);
-      
-      // Alterna el estado del LED después de una respuesta exitosa
-      setIsLedOn(!isLedOn);
+      await fetch(`${deviceIp}${route}`);
 
-      // Muestra una alerta indicando el nuevo estado
+      // Alterna el estado del LED después de una respuesta exitosa
       Alert.alert(`LED ${!isLedOn ? "encendido" : "apagado"}`);
     } catch (error) {
       Alert.alert("Error", "No se pudo conectar al ESP8266");
@@ -45,11 +39,12 @@ const HomeScreen = ({ navigation }: any) => {
   };
 
   // Función para agregar un nuevo dispositivo
-  const addDevice = (name: string, icon: string) => {
+  const addDevice = (name: string, selectedIcon: string, ip: string) => {
     setDevices((prevDevices) => [
       ...prevDevices,
-      { name, icon }, // Agrega el dispositivo a la lista
+      { name, icon:selectedIcon, ip, isLedOn: false }, // Agrega el dispositivo con su IP
     ]);
+  
   };
 
   return (
@@ -78,9 +73,19 @@ const HomeScreen = ({ navigation }: any) => {
               <TouchableOpacity
                 key={index}
                 style={styles.deviceButton}
-                onPress={() => toggleLed()}
+                onPress={() => {
+                  toggleLed(device.ip, device.isLedOn);
+                  // Alterna el estado del LED localmente
+                  setDevices((prevDevices) =>
+                    prevDevices.map((d) =>
+                      d.ip === device.ip
+                        ? { ...d, isLedOn: !d.isLedOn }
+                        : d
+                    )
+                  );
+                }}
               >
-                <IonIcon name={device.icon} size={40} color="white" />
+                <MaterialCommunityIcons name={device.icon} size={40} color="white" />
                 <Text style={styles.deviceText}>{device.name}</Text>
               </TouchableOpacity>
             ))
