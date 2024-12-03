@@ -10,10 +10,31 @@ import {
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import NavBar from '../components/NavBar';
+ // Reemplaza con la dirección IP de tu ESP8266
 
+
+  
 const HomeScreen = ({ navigation }: any) => {
   // Estado para almacenar los dispositivos agregados
+  const ESP8266_IP = 'http://192.168.201.58';
   const [devices, setDevices] = useState<any[]>([]);
+  const [isLedOn, setIsLedOn] = useState(false); // Estado para rastrear si el LED está encendido
+
+  const toggleLed = async () => {
+    try {
+      // Determina la ruta en función del estado actual del LED
+      const route = isLedOn ? '/L' : '/H';
+      await fetch(`${ESP8266_IP}${route}`);
+      
+      // Alterna el estado del LED después de una respuesta exitosa
+      setIsLedOn(!isLedOn);
+
+      // Muestra una alerta indicando el nuevo estado
+      Alert.alert(`LED ${!isLedOn ? "encendido" : "apagado"}`);
+    } catch (error) {
+      Alert.alert("Error", "No se pudo conectar al ESP8266");
+    }
+  };
 
   // Función para manejar el control de los dispositivos
   const handleControlDevice = (deviceName: string) => {
@@ -57,7 +78,7 @@ const HomeScreen = ({ navigation }: any) => {
               <TouchableOpacity
                 key={index}
                 style={styles.deviceButton}
-                onPress={() => handleControlDevice(device.name)}
+                onPress={() => toggleLed()}
               >
                 <IonIcon name={device.icon} size={40} color="white" />
                 <Text style={styles.deviceText}>{device.name}</Text>
